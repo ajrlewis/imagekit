@@ -1,0 +1,20 @@
+[project]
+name = "imagekit"
+version = "0.1.0"
+description = "A collection of image utilities."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "ajrlewis", email = "hello@ajrlewis.com" }
+]
+dependencies = [
+    "numpy==1.25.2",
+    "packaging==23.1",
+    "Pillow==10.0.0",
+    "pillow-heif==0.13.0",
+    "pytesseract==0.3.10",
+    "scipy==1.11.2",
+]
+
+[tool.setuptools]
+packages = ["imagekit"]
