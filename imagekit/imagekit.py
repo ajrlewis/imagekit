@@ -119,6 +119,12 @@ def smooth(img: Image.Image, sigma: float) -> Image.Image:
     return smoothed_img
 
 
+def load(data: bytes) -> Image.Image:
+    img = Image.open(BytesIO(data))
+    img = img.convert("RGBA")
+    return img
+
+
 def read(filepath: str) -> Image.Image:
     img = Image.open(filepath)
     img = img.convert("RGBA")
