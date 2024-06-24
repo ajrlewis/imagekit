@@ -1,5 +1,6 @@
 from collections import Counter
 import colorsys
+from io import BytesIO
 import numpy as np
 from PIL import Image, ImageDraw
 from pillow_heif import register_heif_opener
