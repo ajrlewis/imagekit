@@ -1,6 +1,5 @@
 from collections import Counter
 import colorsys
-from typing import List, Tuple
 import numpy as np
 from PIL import Image, ImageDraw
 from pillow_heif import register_heif_opener
@@ -10,8 +9,8 @@ import scipy.ndimage as ndimage
 register_heif_opener()
 
 
-Color = Tuple[int]
-Colors = List[Color]
+Color = tuple[int]
+Colors = list[Color]
 
 
 def resize(img: Image.Image, width: int, height: int) -> Image.Image:
@@ -19,7 +18,7 @@ def resize(img: Image.Image, width: int, height: int) -> Image.Image:
     return resized_image
 
 
-def size(img: Image.Image) -> Tuple[int]:
+def size(img: Image.Image) -> tuple[int]:
     return img.size
 
 
@@ -104,11 +103,11 @@ def replace_colors(
     return recolored_img
 
 
-def extract_text_from_image(img: Image.Image) -> List[str]:
+def extract_text_from_image(img: Image.Image) -> list[str]:
     # text = pytesseract.image_to_string(img)
     smoothed_img = smooth(img, 1.0)
     text = pytesseract.image_to_string(smoothed_img)
-    rows = text.split("\n")
+    rows = [t for t in text.split("\n") if t]
     return rows
 
 
@@ -128,3 +127,7 @@ def read(filepath: str) -> Image.Image:
 
 def write(img: Image.Image, filepath: str, quality: int = 80):
     img.save(filepath, optimize=True, quality=quality)
+
+
+def rgb_to_hex(rgb: Color = (0, 0, 0)) -> str:
+    return "#%02x%02x%02x" % rgb

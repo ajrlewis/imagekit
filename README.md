@@ -2,6 +2,8 @@
 
 ![My Project Logo](images/logo.png)
 
+A collection of image utility methods.
+
 ## Installation
 
 Install via pip:
