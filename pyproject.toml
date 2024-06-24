@@ -1,9 +1,9 @@
 [project]
 name = "imagekit"
-version = "0.1.0"
-description = "A collection of image utilities."
+version = "0.2.0"
+description = "A collection of image utility methods."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 authors = [
     { name = "ajrlewis", email = "hello@ajrlewis.com" }
 ]
