@@ -115,7 +115,7 @@ def smooth(img: Img, sigma: float) -> Img:
     smoothed_img = ndimage.gaussian_filter(
         img, sigma=(sigma, sigma, 0), mode="reflect", order=0
     )
-    smoothed_img = Image2.fromarray(smoothed_img)
+    smoothed_img = Image.fromarray(smoothed_img)
     return smoothed_img
 
 
