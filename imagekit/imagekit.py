@@ -2,46 +2,46 @@ from collections import Counter
 import colorsys
 from io import BytesIO
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import ImageDraw
+from PIL.Image import Image
 from pillow_heif import register_heif_opener
 import pytesseract
 import scipy.ndimage as ndimage
 
 register_heif_opener()
 
-
 Color = tuple[int]
 Colors = list[Color]
 
 
-def resize(img: Image.Image, width: int, height: int) -> Image.Image:
+def resize(img: Image, width: int, height: int) -> Image:
     resized_image = img.resize((width, height))
     return resized_image
 
 
-def size(img: Image.Image) -> tuple[int]:
+def size(img: Image) -> tuple[int]:
     return img.size
 
 
-def favicon(img: Image.Image) -> Image.Image:
+def favicon(img: Image) -> Image:
     resized_img = resize(img, 16, 16)
     return resized_img
 
 
-def shrink(img: Image.Image, factor: float = 0.5) -> Image.Image:
+def shrink(img: Image, factor: float = 0.5) -> Image:
     width, height = size(image)
     new_width, new_height = int(round(factor * width)), int(round(factor * height))
     resized_image = resize(img, new_width, new_height)
     return resized_image
 
 
-def compress(img: Image.Image, max_size: int = 1024) -> Image.Image:
+def compress(img: Image, max_size: int = 1024) -> Image:
     compressed_img = img.copy()
     compressed_img.thumbnail((max_size, max_size))
     return compressed_img
 
 
-def add_whitespace(img: Image.Image, padding: int = 100) -> Image.Image:
+def add_whitespace(img: Image, padding: int = 100) -> Image:
     padded_size = (img.size[0] + 2 * padding, img.size[1] + 2 * padding)
     padded_img = Image.new("RGBA", padded_size, (255, 255, 255))
     position = (padding, padding)
@@ -49,7 +49,7 @@ def add_whitespace(img: Image.Image, padding: int = 100) -> Image.Image:
     return padded_img
 
 
-def cirularize(img: Image.Image) -> Image.Image:
+def cirularize(img: Image) -> Image:
     width, height = img.size
     alpha = Image.new("L", img.size, 0)
     draw = ImageDraw.Draw(alpha)
@@ -60,7 +60,7 @@ def cirularize(img: Image.Image) -> Image.Image:
     return Image.fromarray(np_img)
 
 
-def most_frequent_colors(img: Image.Image, top: int = 5) -> Colors:
+def most_frequent_colors(img: Image, top: int = 5) -> Colors:
     width, height = img.size
     colors = img.getcolors(width * height)
     frequencies = sorted(colors, key=lambda x: x[0], reverse=True)
@@ -88,9 +88,7 @@ def convert_heic_to_jpg_or_png(input_path, output_path, output_format):
     return output_path
 
 
-def replace_colors(
-    img: Image.Image, source_colors: Colors, target_colors: Colors
-) -> Image.Image:
+def replace_colors(img: Image, source_colors: Colors, target_colors: Colors) -> Image:
     image_array = np.array(img)
     for source_color, target_color in zip(source_colors, target_colors):
         r, g, b = source_color
@@ -104,7 +102,7 @@ def replace_colors(
     return recolored_img
 
 
-def extract_text_from_image(img: Image.Image) -> list[str]:
+def extract_text_from_image(img: Image) -> list[str]:
     # text = pytesseract.image_to_string(img)
     smoothed_img = smooth(img, 1.0)
     text = pytesseract.image_to_string(smoothed_img)
@@ -112,7 +110,7 @@ def extract_text_from_image(img: Image.Image) -> list[str]:
     return rows
 
 
-def smooth(img: Image.Image, sigma: float) -> Image.Image:
+def smooth(img: Image, sigma: float) -> Image:
     smoothed_img = ndimage.gaussian_filter(
         img, sigma=(sigma, sigma, 0), mode="reflect", order=0
     )
@@ -120,20 +118,27 @@ def smooth(img: Image.Image, sigma: float) -> Image.Image:
     return smoothed_img
 
 
-def load(data: bytes) -> Image.Image:
+def load(data: bytes) -> Image:
     img = Image.open(BytesIO(data))
     img = img.convert("RGBA")
     return img
 
 
-def read(filepath: str) -> Image.Image:
+def read(filepath: str) -> Image:
     img = Image.open(filepath)
     img = img.convert("RGBA")
     return img
 
 
-def write(img: Image.Image, filepath: str, quality: int = 80):
+def write(img: Image, filepath: str, quality: int = 80):
     img.save(filepath, optimize=True, quality=quality)
+
+
+def to_bytes(img: Image) -> bytes:
+    img_bytes = BytesIO()
+    img.save(img_bytes, format="PNG")
+    img_bytes.seek(0)
+    return img_bytes
 
 
 def rgb_to_hex(rgb: Color = (0, 0, 0)) -> str:
