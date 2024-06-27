@@ -59,10 +59,10 @@ def cirularize(img: Img) -> Img:
     np_alpha = np.array(alpha)
     np_img = np.array(img)
     np_img = np.dstack((np_img, np_alpha))
-    return Img.fromarray(np_img)
+    return Image.fromarray(np_img)
 
 
-def most_frequent_colors(img: Img, top: int = 5) -> Colors:
+def most_frequent_colors(img: Img, top: int = -1) -> Colors:
     width, height = img.size
     colors = img.getcolors(width * height)
     frequencies = sorted(colors, key=lambda x: x[0], reverse=True)
@@ -100,7 +100,7 @@ def replace_colors(img: Img, source_colors: Colors, target_colors: Colors) -> Im
             & (Img_array[:, :, 2] == b)
         )
         Img_array[mask] = target_color
-    recolored_img = Img.fromarray(Img_array)
+    recolored_img = Image.fromarray(Img_array)
     return recolored_img
 
 
