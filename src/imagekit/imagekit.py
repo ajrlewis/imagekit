@@ -9,6 +9,7 @@ from PIL import Image as ImageLib, ImageChops, ImageDraw
 from PIL.Image import Image
 from PIL import Image, ImageDraw, ImageFont
 from pillow_heif import register_heif_opener
+import PyPDF2
 import pytesseract
 from qrcode import QRCode
 from qrcode.constants import ERROR_CORRECT_L
@@ -180,6 +181,16 @@ def read(filepath: str) -> Image:
     img = ImageLib.open(filepath)
     img = img.convert("RGBA")
     return img
+
+
+def read_pdf(filepath: str) -> str:
+    reader = PyPDF2.PdfReader(filepath)
+    texts = []
+    for page in reader.pages:
+        text = page.extract_text()
+        texts.append(text)
+    text = "\n".join(texts)
+    return text
 
 
 def save(img: Image, filepath: str, quality: int = 80):

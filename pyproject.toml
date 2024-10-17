@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "imagekit"
-version = "0.2.0"
+version = "0.2.1"
 description = "A collection of image utility methods."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -23,6 +23,7 @@ dependencies = [
     "scipy==1.11.2",
     "qrcode==7.4.2",
     "loguru==0.7.2",
+    "PyPDF2==3.0.1",
 ]
 
 [tool.setuptools.packages.find]
