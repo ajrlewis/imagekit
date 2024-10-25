@@ -19,17 +19,39 @@ ASSETS_PATH = f"{os.path.dirname(os.path.realpath(__file__))}/assets/"
 
 register_heif_opener()
 
+# imagekit/colors.py
 Color = tuple[int]
 Colors = list[Color]
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-
 NOSTR_PURPLE = (169, 21, 255)
 
 
 def rgb_to_hex(rgb: Color = (0, 0, 0)) -> str:
     return "#%02x%02x%02x" % rgb
+
+
+def most_frequent_colors(img: Image, top: int = -1) -> Colors:
+    width, height = img.size
+    colors = img.getcolors(width * height)
+    frequencies = sorted(colors, key=lambda x: x[0], reverse=True)
+    return [f[1] for f in frequencies][:top]
+
+
+def make_most_common_color_transparent(img: Image) -> Image:
+    color_count = Counter(img.getdata())
+    most_common_color = color_count.most_common(1)[0][0]
+    transparent_img = img.convert("RGBA")
+    data = transparent_img.getdata()
+    new_data = []
+    for item in data:
+        if item == most_common_color:
+            new_data.append((0, 0, 0, 0))
+        else:
+            new_data.append(item)
+    transparent_img.putdata(new_data)
+    return transparent_img
 
 
 def resize(img: Image, width: int, height: int) -> Image:
@@ -77,28 +99,6 @@ def cirularize(img: Image) -> Image:
     return img
 
 
-def most_frequent_colors(img: Image, top: int = -1) -> Colors:
-    width, height = img.size
-    colors = img.getcolors(width * height)
-    frequencies = sorted(colors, key=lambda x: x[0], reverse=True)
-    return [f[1] for f in frequencies][:top]
-
-
-def make_most_common_color_transparent(img: Image) -> Image:
-    color_count = Counter(img.getdata())
-    most_common_color = color_count.most_common(1)[0][0]
-    transparent_img = img.convert("RGBA")
-    data = transparent_img.getdata()
-    new_data = []
-    for item in data:
-        if item == most_common_color:
-            new_data.append((0, 0, 0, 0))
-        else:
-            new_data.append(item)
-    transparent_img.putdata(new_data)
-    return transparent_img
-
-
 def convert(input_path: str, output_path: str):
     img = ImageLib.open(input_path)
     img = img.convert("RGBA")
@@ -120,11 +120,12 @@ def replace_colors(img: Image, source_colors: Colors, target_colors: Colors) -> 
     return recolored_img
 
 
-def extract_text(img: Image) -> list[str]:
+def extract_text(img: Image) -> str:
     smoothed_img = smooth(img, 1.0)
     text = pytesseract.image_to_string(smoothed_img)
-    rows = [t for t in text.split("\n") if t]
-    return rows
+    texts = [t for t in text.split("\n") if t]  # Remove blank text
+    text = "\n".join(texts)
+    return text
 
 
 def smooth(img: Image, sigma: float) -> Image:
@@ -143,8 +144,8 @@ def qrcode(
     back_color: str = "#ffffff",
 ) -> Image:
     """
-    https://ajrlewis.com
-    nostr:npub19ccv5fe7rn22cwasygsjkd5f0l64wv3fsw5jxtemvukfznfjtfvq0jmwsh
+    https://{domain}
+    nostr:{npub}
     btc:{address}?amount={amount}
     WIFI:T:WPA;S:{ssid};P:{password};H:true;"
     """
@@ -256,14 +257,3 @@ def nostr_card(npub: str):
     draw.text(text_origin, npub, font=font, fill=WHITE)
 
     return front, back
-
-
-def main():
-    filname = "business-card-example.png"
-    img = read(filname)
-    text = extract_text(img)
-    logger.debug(f"{text = }")
-
-
-if __name__ == "__main__":
-    main()
