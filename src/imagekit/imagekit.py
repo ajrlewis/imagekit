@@ -5,9 +5,9 @@ import os
 
 from loguru import logger
 import numpy as np
-from PIL import Image as ImageLib, ImageChops, ImageDraw
+
+from PIL import Image as ImageLib, ImageChops, ImageDraw, ImageFont
 from PIL.Image import Image
-from PIL import Image, ImageDraw, ImageFont
 from pillow_heif import register_heif_opener
 import PyPDF2
 import pytesseract
@@ -256,3 +256,14 @@ def nostr_card(npub: str):
     draw.text(text_origin, npub, font=font, fill=WHITE)
 
     return front, back
+
+
+def main():
+    filname = "business-card-example.png"
+    img = read(filname)
+    text = extract_text(img)
+    logger.debug(f"{text = }")
+
+
+if __name__ == "__main__":
+    main()
